@@ -17,6 +17,9 @@
    - Pemisahan antara definisi kelas dan fungsi dengan satu baris kosong.
    - Gunakan spasi kosong yang konsisten di sekitar operator dan parameter fungsi untuk meningkatkan kejelasan.
 
+5. **Cara run project**
+  - Cukup run index_server.py dan index_client.py
+
 ****
 # Cara Contributor dan Configurasi Awal Menggunakan Github.
 ****
