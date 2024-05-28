@@ -3,7 +3,8 @@ import threading
 import os
 
 
-class ChatServer:
+
+class SingelChatClient:
     def __init__(self, host='0.0.0.0', port=5555):
         '''
         Inisialisasi objek ChatServer dan mengikat server socket ke alamat dan port yang ditentukan.
@@ -108,7 +109,7 @@ class ChatServer:
             self.broadcast(f'{nickname} left the chat!'.encode('ascii'))
             print(f'{nickname} has disconnected.')
 
-    def receive(self):
+    def message_receive(self):
         '''
         Fungsi ini akan menerima koneksi baru dari client, menambahkan client ke daftar client yang terhubung, dan memulai
         thread baru untuk menangani koneksi tersebut.

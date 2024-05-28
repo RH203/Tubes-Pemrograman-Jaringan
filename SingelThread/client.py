@@ -2,7 +2,7 @@ import socket
 import os
 
 
-class ChatClient:
+class SingelChatClient:
     def __init__(self, host='127.0.0.1', port=5555):
         '''
         Inisialisasi objek ChatClient dan membuat koneksi socket ke server.
@@ -18,7 +18,7 @@ class ChatClient:
         self.client.connect((host, port))
         self.nickname = input("Enter your nickname: ")
 
-    def receive(self):
+    def message_receive(self):
         '''
         Fungsi ini menerima pesan dari server dan menampilkannya ke pengguna.
         '''
@@ -35,17 +35,32 @@ class ChatClient:
                 self.client.close()
                 break
 
-    def send_message(self, message):
+    def send_message(self):
         '''
         Fungsi ini mengirim pesan ke server.
 
         Parameters:
             - message: Pesan yang akan dikirim.
         '''
-        try:
-            self.client.send(message.encode('ascii'))
-        except Exception as e:
-            print(f"An error occurred while sending the message. Error: {e}")
+        while True:
+            try:
+                message = input("")
+                message_lower = message.lower()
+
+                if message_lower in ['audio', 'image', 'video']:
+                    file_path = input("Enter the path of the file: ")
+                    if os.path.isfile(file_path):
+                        file_type = message_lower
+                        self.send_file(file_path, file_type)
+                    else:
+                        print("File not found.")
+                else:
+                    message = f'{self.nickname}: {message}'
+                    self.client.send(message.encode('ascii'))
+            except Exception as e:
+                print(f"An error occurred! Unable to send message. Error: {e}")
+                self.client.close()
+                break
 
     def send_file(self, file_path, file_type):
         '''
@@ -65,6 +80,3 @@ class ChatClient:
         except Exception as e:
             print(f"An error occurred while sending the file. Error: {e}")
 
-
-client = ChatClient()
-client.receive()
