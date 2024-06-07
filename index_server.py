@@ -1,5 +1,5 @@
 from multithread.server import ChatServer
-from SingelThread.server import SingelChatClient
+from SingleThread.finalserver import SingleChatServer
 import os
 
 if __name__ == "__main__":
@@ -11,5 +11,5 @@ if __name__ == "__main__":
         server = ChatServer()
         server.receive()
     else:
-        server = SingelChatClient()
-        server.message_receive()
+        single_server = SingleChatServer()
+        single_server.start_chatting()
