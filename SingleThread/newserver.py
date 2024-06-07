@@ -1,41 +1,36 @@
 import socket
+import select
+import sys
+from thread import *
 
-class SingleThreadChatServer:
-    def __init__(self, host='0.0.0.0', port=5555):
-        self.host = host
-        self.port = port
-        self.server_socket = socket.socket()
-        self.server_socket.bind((host, port))
-        self.server_socket.listen(1)
-        print("Server is waiting for a connection...")
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-    def kirim_pesan(self, client_socket):
-        while True:
-            message = input("Server: ")
-            client_socket.send(message.encode('utf-8'))
-            if message.lower() == "exit":
-                print("Server has closed the connection.")
-                client_socket.close()
-                break
+server.bind(('192.168.55.13', 8081))
+server.listen(100)
 
-    def terima_pesan(self, client_socket):
-        while True:
-            message = client_socket.recv(1024).decode('utf-8')
-            print("Client: {}".format(message))
-            if message.lower() == "exit":
-                print("Client has closed the connection.")
-                client_socket.close()
-                break
+clients = []
 
-    def run(self):
-        client_socket, client_addr = self.server_socket.accept()
-        print("Client connected from: {}".format(client_addr))
+def broadcast(message, connection):
+    for client in clients:
+        if client != connection:
+            client.send(message)
+
+def client_thread(connection, address):
+    connection.send("Selamat datang di chat room!")
+    while True:
         try:
-            while True:
-                self.terima_pesan(client_socket)
-                self.kirim_pesan(client_socket)
-        except Exception as e:
-            print(f"An error occurred: {e}")
-        finally:
-            client_socket.close()
-            self.server_socket.close()
+            message = connection.recv(1024)
+            if message:
+                broadcast(message, connection)
+            else:
+                remove(connection)
+                connection.close()
+                break
+        except:
+            continue
+
+while True:
+    connection, address = server.accept()
+    clients.append(connection)
+    start_new_thread(client_thread, (connection, address))

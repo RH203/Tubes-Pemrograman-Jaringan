@@ -1,6 +1,6 @@
 import threading
 from multithread.client import ChatClient
-from SingleThread.newclient import SingleThreadChatClient
+from SingleThread.finalclient import SingleChatClient
 import os
 
 if __name__ == '__main__':
@@ -16,5 +16,8 @@ if __name__ == '__main__':
         write_thread = threading.Thread(target=chat_client.write)
         write_thread.start()
     else:
-        chat_client = SingleThreadChatClient()
-        chat_client.run()
+        # Gunakan SingleChatClient tanpa multithreading
+        single_chat_client = SingleChatClient()
+        single_chat_client.start_chatting()
+        
+    
