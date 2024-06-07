@@ -91,5 +91,3 @@ class SingleChatServer:
         except Exception as e:
             print(f"An error occurred while saving the file. Error: {e}")
 
-server = SingleChatServer()
-server.start_chatting()
