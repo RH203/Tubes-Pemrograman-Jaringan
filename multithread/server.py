@@ -128,4 +128,3 @@ class ChatServer:
 
       thread = threading.Thread(target=self.handle_client, args=(client,))
       thread.start()
-
