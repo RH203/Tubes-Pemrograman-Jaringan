@@ -49,6 +49,3 @@ class SingleChatClient:
                 print(f"Sent {file_type} file: {file_name}")
         except Exception as e:
             print(f"An error occurred while sending the file. Error: {e}")
-
-client = SingleChatClient()
-client.start_chatting()
