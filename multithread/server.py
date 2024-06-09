@@ -5,13 +5,6 @@ import os
 
 class ChatServer:
   def __init__(self, host='0.0.0.0', port=5555):
-    '''
-    Inisialisasi objek ChatServer dan mengikat server socket ke alamat dan port yang ditentukan.
-
-    Parameter:
-        - host: Alamat IP yang akan diikat oleh server.
-        - port: Nomor port yang akan digunakan oleh server.
-    '''
     self.host = host
     self.port = port
     self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -21,13 +14,6 @@ class ChatServer:
     self.nicknames = []
 
   def broadcast(self, message, client=None):
-    '''
-    Fungsi ini akan mengirim pesan kepada semua client kecuali client yang melakukan pengiriman pesan.
-
-    Parameter:
-        - message: Pesan yang akan dikirim.
-        - client: Socket client yang sedang mengirim pesan. Jika tidak ditentukan, pesan akan dikirim ke semua client.
-    '''
     for c in self.clients:
       if c != client:
         try:
@@ -36,12 +22,6 @@ class ChatServer:
           self.remove_client(c)
 
   def handle_client(self, client):
-    '''
-    Fungsi ini akan menangani komunikasi antara server dan client, menerima pesan dari client, memprosesnya, dan menyebarkannya.
-
-    Parameter:
-        - client: Socket client yang sedang aktif.
-    '''
     while True:
       try:
         message = client.recv(1024)
@@ -51,6 +31,10 @@ class ChatServer:
           nickname, file_info = header.split(': ', 1)
           file_type, file_name, file_size = file_info.split(' ', 2)
           file_size = int(file_size)
+
+          if file_size > 4 * 1024 * 1024:  # 4MB
+            self.broadcast("File size exceeds the maximum limit of 4MB.".encode('ascii'))
+            return
 
           remaining_data = file_size - len(file_data)
           while remaining_data > 0:
@@ -67,15 +51,6 @@ class ChatServer:
         break
 
   def save_file(self, file_data, file_type, file_name):
-    '''
-    Fungsi ini akan menyimpan file yang diterima dari client ke direktori yang sesuai di server, terdapat condition untuk
-    menghindari konflik nama jika ada.
-
-    Parameter:
-        - file_data: Data file yang diterima dari client.
-        - file_type: Jenis file yang diterima (audio, image, atau video).
-        - file_name: Nama file yang diterima dari client.
-    '''
     script_dir = os.path.dirname(__file__)
     uploads_dir = os.path.join(script_dir, '..', 'uploads', file_type)
     os.makedirs(uploads_dir, exist_ok=True)
@@ -94,12 +69,6 @@ class ChatServer:
     print(f"Saved {file_type} file: {os.path.basename(file_path)}")
 
   def remove_client(self, client):
-    '''
-    Fungsi ini akan menghapus client yang terputus dari daftar client yang terhubung ke server dan menutup soket client yang terputus.
-
-    Parameter:
-        - client: Socket client yang telah terputus.
-    '''
     if client in self.clients:
       index = self.clients.index(client)
       self.clients.remove(client)
@@ -109,10 +78,6 @@ class ChatServer:
       print(f'{nickname} has disconnected.')
 
   def receive(self):
-    '''
-    Fungsi ini akan menerima koneksi baru dari client, menambahkan client ke daftar client yang terhubung, dan memulai
-    thread baru untuk menangani koneksi tersebut.
-    '''
     while True:
       client, address = self.server.accept()
       print(f'Connected with {str(address)}')
