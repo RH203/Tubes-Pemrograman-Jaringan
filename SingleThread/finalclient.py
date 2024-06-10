@@ -32,7 +32,7 @@ class SingleChatClient:
                     else:
                         print("File not found.")
                 else:
-                    message = f'{self.nickname}: {message}'
+                    message = f'{self.nickname}: {message + " |"}'
                     self.client.send(message.encode('ascii'))
             except Exception as e:
                 print(f"An error occurred! Unable to send/receive message. Error: {e}")

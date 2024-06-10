@@ -27,15 +27,15 @@ class SingleChatServer:
                 self.clients.append(client)
 
                 print(f'Nickname of client is {nickname}!')
-                self.broadcast(f'{nickname} joined the chat!'.encode('ascii'))
-                client.send('Connected to the server!'.encode('ascii'))
+                self.broadcast(f'{nickname} joined the chat!\n'.encode('ascii'))
+                client.send('Connected to the server! \n'.encode('ascii'))
 
                 thread = threading.Thread(target=self.handle_client, args=(client,))
                 thread.start()
             except Exception as e:
-                print(f"An error occurred! Error: {e}")
+                print(f"An error occurred! Error: {e} ")
                 break
-
+            
     def broadcast(self, message, client=None):
         for c in self.clients:
             if c != client:
@@ -45,6 +45,8 @@ class SingleChatServer:
                     self.remove_client(c)
 
     def handle_client(self, client):
+        MAX_FILE_SIZE = 4 * 1024 * 1024  # 4MB in bytes
+    
         while True:
             try:
                 message = client.recv(1024)
@@ -54,6 +56,11 @@ class SingleChatServer:
                     nickname, file_info = header.split(': ', 1)
                     file_type, file_name, file_size = file_info.split(' ', 2)
                     file_size = int(file_size)
+
+                    if file_size > MAX_FILE_SIZE:
+                        error_message = f"File size exceeds 4MB limit. File {file_name} not sent."
+                        client.send(error_message.encode('ascii'))
+                        continue  # Skip processing this file
 
                     remaining_data = file_size - len(file_data)
                     while remaining_data > 0:
@@ -69,6 +76,8 @@ class SingleChatServer:
                 print(f"An error occurred! Unable to send/receive message. Error: {e}")
                 self.remove_client(client)
                 break
+
+    
 
     def save_file(self, file_data, file_type, file_name):
         try:

@@ -20,4 +20,3 @@ if __name__ == '__main__':
         single_chat_client = SingleChatClient()
         single_chat_client.start_chatting()
         
-    
